@@ -1,11 +1,8 @@
 package com.at.dnsguard
 
 import android.accessibilityservice.AccessibilityService
-import android.app.admin.DeviceAdminReceiver
-import android.app.admin.DevicePolicyManager
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.accessibility.AccessibilityEvent
@@ -21,15 +18,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-class AdminReceiver : DeviceAdminReceiver()
-
-/**
- * Accessibility service kept intentionally non-interfering.
- * It does not force the user out of system settings or block uninstall actions.
- */
+// خدمة إمكانية الوصول غير المتداخلة؛ لا تمنع تغيير إعدادات الهاتف ولا حذف التطبيق.
 class DnsLockService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // No automatic navigation or blocking of system settings.
+        // لا يتم اتخاذ أي إجراء تلقائيًا على أحداث النظام.
     }
 
     override fun onInterrupt() {}
@@ -61,11 +53,13 @@ class MainActivity : ComponentActivity() {
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "سد ثغرات الـ DNS ومنع التلاعب",
+                            text = "إدارة إعدادات DNS من جهازك",
                             fontSize = 14.sp,
                             color = Color.Gray
                         )
+
                         Spacer(modifier = Modifier.height(40.dp))
+
                         Button(
                             onClick = {
                                 startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
@@ -74,33 +68,25 @@ class MainActivity : ComponentActivity() {
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
-                                "1. إعدادات إمكانية الوصول",
+                                "فتح إعدادات إمكانية الوصول",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
+
                         Spacer(modifier = Modifier.height(16.dp))
-                        Button(
+
+                        OutlinedButton(
                             onClick = {
-                                val cn = ComponentName(this@MainActivity, AdminReceiver::class.java)
-                                val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
-                                    putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, cn)
-                                    putExtra(
-                                        DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                                        "امنح صلاحية مسؤول الجهاز فقط إذا كنت تفهم أثرها ويمكنك إلغاؤها لاحقاً."
-                                    )
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                    data = Uri.parse("package:$packageName")
                                 }
                                 startActivity(intent)
                             },
                             modifier = Modifier.fillMaxWidth().height(55.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF43A047))
+                            shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text(
-                                "2. إعداد مسؤول الجهاز",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                            Text("معلومات التطبيق وإعداداته", fontSize = 13.sp)
                         }
                     }
                 }
