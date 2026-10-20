@@ -4,6 +4,8 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -95,6 +97,20 @@ class MainActivity : ComponentActivity() {
                                     modifier = Modifier.fillMaxWidth().height(50.dp),
                                     shape = RoundedCornerShape(14.dp)
                                 ) { Text("نسخ اسم المزوّد", fontWeight = FontWeight.Bold) }
+                                Spacer(Modifier.height(8.dp))
+                                OutlinedButton(
+                                    onClick = {
+                                        val adminComponent = ComponentName(this@MainActivity, DnsGuardAdminReceiver::class.java)
+                                        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
+                                            putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponent)
+                                            putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                                                "يسجّل DNS Guard ضمن مشرفي الجهاز. هذه الصلاحية وحدها لا تمنع حذف التطبيق ولا تقفل إعدادات DNS.")
+                                        }
+                                        startActivity(intent)
+                                    },
+                                    modifier = Modifier.fillMaxWidth().height(50.dp),
+                                    shape = RoundedCornerShape(14.dp)
+                                ) { Text("تفعيل مسؤول الجهاز", fontWeight = FontWeight.Bold) }
                                 Spacer(Modifier.height(8.dp))
                                 OutlinedButton(
                                     onClick = {
