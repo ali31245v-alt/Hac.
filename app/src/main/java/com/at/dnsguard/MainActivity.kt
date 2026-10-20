@@ -4,7 +4,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -16,6 +15,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,12 +43,8 @@ class MainActivity : ComponentActivity() {
                     onSurface = Color.White
                 )
             ) {
-                var selectedProvider by androidx.compose.runtime.remember {
-                    androidx.compose.runtime.mutableStateOf("security.cloudflare-dns.com")
-                }
-                var message by androidx.compose.runtime.remember {
-                    androidx.compose.runtime.mutableStateOf("اختر مزوّد الحماية ثم افتح إعدادات DNS الخاصة")
-                }
+                val selectedProvider = remember { mutableStateOf("security.cloudflare-dns.com") }
+                val message = remember { mutableStateOf("اختر مزوّد الحماية ثم افتح إعدادات DNS الخاصة") }
                 val clipboard = androidx.compose.ui.platform.LocalClipboardManager.current
 
                 Surface(modifier = Modifier.fillMaxSize(), color = Navy) {
@@ -81,8 +79,8 @@ class MainActivity : ComponentActivity() {
                                     title = "حجب البرمجيات الضارة ومحتوى البالغين",
                                     subtitle = "Cloudflare Family",
                                     host = "family.cloudflare-dns.com",
-                                    selected = selectedProvider == "family.cloudflare-dns.com",
-                                    onClick = { selectedProvider = "family.cloudflare-dns.com" }
+                                    selected = selectedProvider.value == "family.cloudflare-dns.com",
+                                    onClick = { selectedProvider.value = "family.cloudflare-dns.com" }
                                 )
                                 Spacer(Modifier.height(12.dp))
                                 Text("اسم المزوّد الذي ستدخله:", color = SoftText, fontSize = 13.sp)
@@ -102,14 +100,14 @@ class MainActivity : ComponentActivity() {
                                     onClick = {
                                         try {
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                                                startActivity(Intent(Settings.ACTION_PRIVATE_DNS_SETTINGS))
+                                                startActivity(Intent(Settings.ACTION_SETTINGS))
                                             } else {
                                                 startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
                                             }
-                                            message = "في الإعدادات اختر DNS الخاص، ثم اسم مضيف مزوّد DNS الخاص، والصق الاسم المنسوخ واحفظ."
+                                            message.value = "في الإعدادات اختر DNS الخاص، ثم اسم مضيف مزوّد DNS الخاص، والصق الاسم المنسوخ واحفظ."
                                         } catch (_: Exception) {
                                             startActivity(Intent(Settings.ACTION_SETTINGS))
-                                            message = "افتح الشبكة والإنترنت ثم DNS الخاص، وأدخل اسم المزوّد."
+                                            message.value = "افتح الشبكة والإنترنت ثم DNS الخاص، وأدخل اسم المزوّد."
                                         }
                                     },
                                     modifier = Modifier.fillMaxWidth().height(50.dp),
