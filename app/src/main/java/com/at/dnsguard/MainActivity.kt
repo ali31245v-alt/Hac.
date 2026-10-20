@@ -20,10 +20,10 @@ import androidx.compose.ui.unit.sp
 
 class AdminReceiver : DeviceAdminReceiver()
 
-/** This service does not block system settings or interfere with uninstall flows. */
+/** Transparent helper service; it does not block settings or uninstall actions. */
 class DnsLockService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
-        // No forced navigation or blocking of device settings.
+        // Intentionally does not force users out of system settings.
     }
 
     override fun onInterrupt() {}
@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "إدارة إعدادات DNS بوضوح وتحكّم",
+                            text = "سد ثغرات الـ DNS ومراجعة إعدادات الحماية",
                             fontSize = 14.sp,
                             color = Color.Gray
                         )
