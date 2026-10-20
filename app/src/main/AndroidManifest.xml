@@ -8,6 +8,12 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity
+            android:name=".DnsWarningActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -30,7 +36,7 @@
         </receiver>
         <service
             android:name=".ProtectionAccessibilityService"
-            android:label="DNS Guard - تشخيص إمكانية الوصول"
+            android:label="DNS Guard - تنبيه إعدادات DNS"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="true">
             <intent-filter>
