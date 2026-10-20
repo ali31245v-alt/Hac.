@@ -73,8 +73,8 @@ class MainActivity : ComponentActivity() {
                                     title = "حجب البرمجيات الضارة",
                                     subtitle = "Cloudflare Security",
                                     host = "security.cloudflare-dns.com",
-                                    selected = selectedProvider == "security.cloudflare-dns.com",
-                                    onClick = { selectedProvider = "security.cloudflare-dns.com" }
+                                    selected = selectedProvider.value == "security.cloudflare-dns.com",
+                                    onClick = { selectedProvider.value = "security.cloudflare-dns.com" }
                                 )
                                 Spacer(Modifier.height(8.dp))
                                 ProviderOption(
@@ -87,12 +87,12 @@ class MainActivity : ComponentActivity() {
                                 Spacer(Modifier.height(12.dp))
                                 Text("اسم المزوّد الذي ستدخله:", color = SoftText, fontSize = 13.sp)
                                 Spacer(Modifier.height(4.dp))
-                                Text(selectedProvider, color = Cyan, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                                Text(selectedProvider.value, color = Cyan, fontSize = 15.sp, fontWeight = FontWeight.Bold)
                                 Spacer(Modifier.height(12.dp))
                                 Button(
                                     onClick = {
-                                        clipboard.setText(androidx.compose.ui.text.AnnotatedString(selectedProvider))
-                                        message = "تم نسخ اسم المزوّد. الصقه في خانة اسم مضيف DNS الخاص."
+                                        clipboard.setText(androidx.compose.ui.text.AnnotatedString(selectedProvider.value))
+                                        message.value = "تم نسخ اسم المزوّد. الصقه في خانة اسم مضيف DNS الخاص."
                                     },
                                     modifier = Modifier.fillMaxWidth().height(50.dp),
                                     shape = RoundedCornerShape(14.dp)
@@ -126,7 +126,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         Spacer(Modifier.height(12.dp))
-                        Text(message, color = SoftText, fontSize = 13.sp)
+                        Text(message.value, color = SoftText, fontSize = 13.sp)
                         Spacer(Modifier.height(18.dp))
                         Text("ملاحظة: يلزم اتصال بالإنترنت ودعم DNS الخاص من الهاتف والشبكة. قد لا تعمل بعض المواقع أو الشبكات مع مزوّد معيّن.", color = SoftText, fontSize = 12.sp)
                     }
