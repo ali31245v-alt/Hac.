@@ -1,12 +1,13 @@
 package com.at.dnsguard
 
+import android.accessibilityservice.AccessibilityService
+import android.app.admin.DeviceAdminReceiver
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.view.accessibility.AccessibilityEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -14,64 +15,78 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+class AdminReceiver : DeviceAdminReceiver()
+
+/** This service does not block system settings or interfere with uninstall flows. */
+class DnsLockService : AccessibilityService() {
+    override fun onAccessibilityEvent(event: AccessibilityEvent) {
+        // No forced navigation or blocking of device settings.
+    }
+
+    override fun onInterrupt() {}
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                Column(
-                    modifier = Modifier.fillMaxSize().background(Color(0xFFF5F7FB)).padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color(0xFFF8F9FA)
                 ) {
-                    Text("🛡️", fontSize = 54.sp)
-                    Spacer(Modifier.height(12.dp))
-                    Text("DNS Guard", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color(0xFF173B70))
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        "اختصارات آمنة لإعدادات DNS على جهازك",
-                        fontSize = 16.sp, textAlign = TextAlign.Center, color = Color(0xFF4B5563)
-                    )
-                    Spacer(Modifier.height(24.dp))
-                    Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = Color.White)) {
-                        Column(Modifier.padding(18.dp)) {
-                            Text("إدارة DNS الخاص", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                            Spacer(Modifier.height(8.dp))
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(24.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "🛡️", fontSize = 60.sp)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "DNS Guard",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF1E88E5)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "إدارة إعدادات DNS بوضوح وتحكّم",
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.height(40.dp))
+                        Button(
+                            onClick = {
+                                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                            },
+                            modifier = Modifier.fillMaxWidth().height(55.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
                             Text(
-                                "افتح إعدادات النظام لتغيير DNS يدويًا. التطبيق لا يغيّر الإعدادات دون موافقتك ولا يمنعك من مغادرتها أو حذف التطبيق.",
-                                color = Color(0xFF4B5563), fontSize = 14.sp
+                                "1. فتح إعدادات إمكانية الوصول",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
                             )
-                            Spacer(Modifier.height(16.dp))
-                            Button(
-                                onClick = {
-                                    try {
-                                        startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
-                                    } catch (_: Exception) {
-                                        startActivity(Intent(Settings.ACTION_SETTINGS))
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) { Text("فتح إعدادات الشبكة") }
-                            Spacer(Modifier.height(8.dp))
-                            OutlinedButton(
-                                onClick = {
-                                    startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                        data = Uri.parse("package:$packageName")
-                                    })
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) { Text("معلومات التطبيق") }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = {
+                                startActivity(Intent(Settings.ACTION_SECURITY_SETTINGS))
+                            },
+                            modifier = Modifier.fillMaxWidth().height(55.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF43A047))
+                        ) {
+                            Text(
+                                "2. فتح إعدادات أمان الجهاز",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
-                    Spacer(Modifier.height(18.dp))
-                    Text(
-                        "ملاحظة: تختلف أماكن إعدادات DNS حسب الشركة وإصدار أندرويد.",
-                        fontSize = 12.sp, color = Color.Gray, textAlign = TextAlign.Center
-                    )
                 }
             }
         }
