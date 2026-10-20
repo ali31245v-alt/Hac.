@@ -2,6 +2,9 @@ package com.at.dnsguard
 
 import android.accessibilityservice.AccessibilityService
 import android.app.admin.DeviceAdminReceiver
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -20,10 +23,13 @@ import androidx.compose.ui.unit.sp
 
 class AdminReceiver : DeviceAdminReceiver()
 
-/** Transparent helper service; it does not block settings or uninstall actions. */
+/**
+ * Accessibility service kept intentionally non-interfering.
+ * It does not force the user out of system settings or block uninstall actions.
+ */
 class DnsLockService : AccessibilityService() {
-    override fun onAccessibilityEvent(event: AccessibilityEvent) {
-        // Intentionally does not force users out of system settings.
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        // No automatic navigation or blocking of system settings.
     }
 
     override fun onInterrupt() {}
@@ -39,7 +45,9 @@ class MainActivity : ComponentActivity() {
                     color = Color(0xFFF8F9FA)
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxSize().padding(24.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(24.dp),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -53,7 +61,7 @@ class MainActivity : ComponentActivity() {
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "سد ثغرات الـ DNS ومراجعة إعدادات الحماية",
+                            text = "سد ثغرات الـ DNS ومنع التلاعب",
                             fontSize = 14.sp,
                             color = Color.Gray
                         )
@@ -66,7 +74,7 @@ class MainActivity : ComponentActivity() {
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
-                                "1. فتح إعدادات إمكانية الوصول",
+                                "1. إعدادات إمكانية الوصول",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -74,14 +82,22 @@ class MainActivity : ComponentActivity() {
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
                             onClick = {
-                                startActivity(Intent(Settings.ACTION_SECURITY_SETTINGS))
+                                val cn = ComponentName(this@MainActivity, AdminReceiver::class.java)
+                                val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
+                                    putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, cn)
+                                    putExtra(
+                                        DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                                        "امنح صلاحية مسؤول الجهاز فقط إذا كنت تفهم أثرها ويمكنك إلغاؤها لاحقاً."
+                                    )
+                                }
+                                startActivity(intent)
                             },
                             modifier = Modifier.fillMaxWidth().height(55.dp),
                             shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF43A047))
                         ) {
                             Text(
-                                "2. فتح إعدادات أمان الجهاز",
+                                "2. إعداد مسؤول الجهاز",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
